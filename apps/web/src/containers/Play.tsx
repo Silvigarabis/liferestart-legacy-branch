@@ -150,11 +150,15 @@ export function Play() {
     const [auto, setAuto] = useState(false)
     const logRef = useRef<HTMLUListElement>(null)
     const autoRef = useRef(0)
+    const processRef = useRef(false)
     const gotoSummary = useGotoSummary()
     const handleNext = useCallback(() => {
         if (ended) return
+        if (processRef.current) return
+        processRef.current = true
         const achievements = next()
         toastAchvs(achievements)
+        processRef.current = false
     }, [ended, next])
     const handleGotoSummary = useCallback(() => {
         if (!ended) return

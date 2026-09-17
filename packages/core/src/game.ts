@@ -58,10 +58,15 @@ export function next(
     })
     const age = s.props.current.age
     const tr = ttr(s, profile, rng)
-    const events = ages
-        .get(age)!
-        .event.filter(([e]) => ec(e, tr.state, profile))
-    const event = pickWeight(events, rng)!
+    const events = ages.get(age)!.event
+    let event: Event['id'] | null = null
+    for (const level of events) {
+        const filtered = level.filter(([e]) => ec(e, tr.state, profile))
+        if (filtered.length < 1) continue
+        event = pickWeight(filtered, rng)
+    }
+    if (event === null)
+        throw new Error('No event could be picked for age ' + age)
     const er = etr(event, tr.state, profile)
     const ar = atr(Ao.Trajectory, er.state, profile)
     const end = ar.state.life < 1
